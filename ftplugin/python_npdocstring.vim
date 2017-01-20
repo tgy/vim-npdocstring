@@ -32,5 +32,5 @@ if !exists("Npdocstring(...)")
         end
     endfunction
 
-    command! -nargs=? -bar Npdocstring call Npdocstring(<f-args>)
+    command! -buffer -nargs=? -bar Npdocstring call Npdocstring(<f-args>)
 endif
