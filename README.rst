@@ -91,3 +91,8 @@ this really flies in the face of what ``npdocstring`` is designed for, that is
 an executable style guide for all Python code*.
 
 .. _gq{motion}: https://github.com/vim/vim/blob/b182b40080a23ea1e1ffa28ea03b412174a236bb/runtime/doc/change.txt#L1299
+
+TODO
+====
+
+- Add ``doc/npdocstring.txt``
