@@ -1,0 +1,1 @@
+../ftplugin/python_npdocstring.vim
