@@ -8,7 +8,7 @@ else
     throw 'No python support present, vim-npdocstring will be disabled'
 endif
 
-command! Npdocstring exec("AvailablePython npdocstring_process_file()")
+command! Npdocstring exec("AvailablePython npdocstring_file()")
 
 AvailablePython <<EOF
 from __future__ import print_function
