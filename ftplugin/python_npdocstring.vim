@@ -1,36 +1,50 @@
-" Only do this when not done yet for this buffer
-if exists('g:loaded_npdocstring')
-    finish
+if has('python3')
+    command! -nargs=1 AvailablePython python3 <args>
+    let s:available_short_python = ':py3'
+elseif has('python')
+    command! -nargs=1 AvailablePython python <args>
+    let s:available_short_python = ':py'
+else
+    throw 'No python support present, vim-npdocstring will be disabled'
 endif
-let g:loaded_npdocstring = 1
 
-if !exists("Npdocstring(...)")
-    function Npdocstring(...)
+command! Npdocstring exec("AvailablePython npdocstring_process_file()")
 
-        let npdocstring_cmd="npdocstring"
+AvailablePython <<EOF
+from __future__ import print_function
 
-        if !executable(npdocstring_cmd)
-            echoerr "File " . npdocstring_cmd . " not found. Please install it first."
-            return
-        endif
+from sys import version_info
 
-        let execmdline=npdocstring_cmd
-		" save current cursor position
-		let current_cursor = getpos(".")
-        silent execute "0,$!" . execmdline
-		" restore cursor
-		call setpos('.', current_cursor)
-        if v:shell_error != 0
-            " Shell command failed, so open a new buffer with error text
-            execute 'normal! gg"ayG'
-            silent undo
-            execute 'normal! ' . current_line . 'G'
-            " restore cursor position
-            call setpos('.', current_cursor)
-            silent new
-            silent put a
-        end
-    endfunction
+import npdocstring
+import vim
 
-    command! -buffer -nargs=? -bar Npdocstring call Npdocstring(<f-args>)
-endif
+try:
+    import npdocstring
+    npdocstring_imported = True
+except ImportError:
+    npdocstring_imported = False
+
+
+def npdocstring_format_text_range(text_range):
+    if not npdocstring_imported:
+        print("No npdocstring python module detected, you should install it.")
+        return
+
+    old_text = '\n'.join(text_range)
+
+    new_text = npdocstring.process_file(file_content=old_text)
+
+    if new_text is None or old_text == new_text:
+        return
+
+    new_lines = new_text.split('\n')
+
+    text_range[:] = new_lines
+
+def npdocstring_file():
+    npdocstring_format_text_range(vim.current.buffer)
+
+def npdocstring_visual():
+    npdocstring_format_text_range(vim.current.range)
+
+EOF
